@@ -21,12 +21,15 @@ pricing_data = {
 
 # Function to display the package details
 def display_package_details():
-    st.header("Packages Details")
+    # st.subheader("Packages Details")
 
     # Display the pricing data in a structured way
     for package, facilities in pricing_data.items():
         st.subheader(f"{package} Package")
         df = pd.DataFrame(facilities).T
+
+        # Format the table to show 2 decimal places
+        df = df.applymap(lambda x: f"{x:.2f}")
         st.table(df)
 
 # Function to calculate prices and display the result
@@ -51,23 +54,32 @@ def calculate_prices(package, num_endpoints, num_users, num_learners, num_ninja_
 
 # Main function for the cost calculation
 def cost_calculation():
-    st.header("Cost and Selling Price Calculation")
+    
+    
+    st.subheader("Cost and Selling Price Calculation")
 
     # Step 1: Select the package
+    # with col1:
     package_type = st.selectbox("Choose a package", ["Standard", "Premium"])
-
+    
+    col1, col2, col3 = st.columns(3)
     # Step 2: User input for the number of facilities
-    num_endpoints = st.number_input("Number of Endpoints", min_value=0, value=0, step=1)
-    num_users = st.number_input("Number of Users", min_value=0, value=0, step=1)
-    num_learners = st.number_input("Number of Learners", min_value=0, value=0, step=1)
-    num_ninja_one = st.number_input("Number of Ninja One", min_value=0, value=0, step=1)
-    num_avepoint = st.number_input("Number of Avepoint", min_value=0, value=0, step=1)
+    with col1:
+        num_endpoints = st.number_input("Number of Endpoints", min_value=0, value=0, step=1)
+        num_ninja_one = st.number_input("Number of Ninja One", min_value=0, value=0, step=1)
+        
+        
+    with col2:
+        num_users = st.number_input("Number of Users", min_value=0, value=0, step=1)
+        num_avepoint = st.number_input("Number of Avepoint", min_value=0, value=0, step=1)
+        
+    with col3:
+        num_learners = st.number_input("Number of Learners", min_value=0, value=0, step=1)
 
     # Step 3: Calculate the prices
     cost_prices, selling_prices, num_facilities = calculate_prices(package_type, num_endpoints, num_users, num_learners, num_ninja_one, num_avepoint)
 
-    # Step 4: Display the selected package
-    st.write(f"### Selected Package: {package_type}")
+   
     
     # Step 5: Display the output in a table
     summary_data = {
@@ -87,19 +99,27 @@ def cost_calculation():
     total_selling_price = sum(selling_prices)
     margin = total_selling_price - total_cost_price
 
+    st.divider()
+    
+     # Step 4: Display the selected package
+    st.write(f"##### Selected Package: {package_type}")
+    
+    # Display total prices and margin
+    st.write(f"###### Total Cost Price: ${total_cost_price:,.1f}")
+    st.write(f"###### Total Selling Price: ${total_selling_price:,.1f}")
+    st.write(f"###### Margin: ${margin:,.1f}")
+    #st.divider()
+    
     # Display the summary table
     st.table(summary_df)
-
-    # Display total prices and margin
-    st.write(f"### Total Cost Price: ${total_cost_price:,.2f}")
-    st.write(f"### Total Selling Price: ${total_selling_price:,.2f}")
-    st.write(f"### Margin: ${margin:,.2f}")
 
 # Streamlit app
 st.title("Service Pricing Plan Calculator")
 
 # Create a menu for Packages Details and Cost Calculation using radio buttons
-menu = st.sidebar.radio("Select a Menu", ["Packages Details", "Cost Calculation"])
+st.sidebar.write(f"## Select the option:")
+
+menu = st.sidebar.radio("", ["Packages Details", "Cost Calculation"])
 
 # Call functions based on menu selection
 if menu == "Packages Details":
